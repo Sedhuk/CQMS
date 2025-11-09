@@ -34,7 +34,7 @@ This system allows customers to raise support tickets and view progress, while a
 | Backend | Python |
 | Database | MySQL |
 | Visualization | Matplotlib, Pandas |
-| Hosting (optional) | Streamlit Cloud / Heroku / Local Deployment |
+
 
 ---
 
@@ -42,5 +42,5 @@ This system allows customers to raise support tickets and view progress, while a
 
 ### 1️⃣ Clone this repository
 ```bash
-git clone https://github.com/<your-username>/CQMS.git
+git clonehttps://github.com/Sedhuk/CQMS.git/
 cd CQMS
