@@ -5,7 +5,7 @@ from db import get_db_connection
 
 
 
-# ✅ Get user details
+#  Get user details
 def get_user_details(user_id):
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
@@ -13,6 +13,7 @@ def get_user_details(user_id):
     user = cursor.fetchone()
     conn.close()
     return user
+
 def get_user_name(user_id):
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
@@ -21,7 +22,7 @@ def get_user_name(user_id):
     conn.close()
     return user
 
-# ✅ Update user details
+#  Update user details
 def update_user_details(user_id, phone, address):
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -57,7 +58,7 @@ def get_user_tickets(user_id):
     conn.close()
     return tickets
 
-# ✅ Secure page access
+
 if "logged_in" not in st.session_state or not st.session_state.logged_in:
     st.error("Please login first.")
     st.stop()
@@ -66,21 +67,20 @@ profile = get_user_name(user_id)
 user_name = profile["name"] if profile else "User"
 
 st.set_page_config(page_title= "customer Dashboard", page_icon="🛠️")
-col1, col2 = st.columns([7, 2])  # Adjust ratio to control spacing
+col1, col2 = st.columns([7, 2])  
 with col1:
     st.title("🛠️Welcome " + str(user_name))
 with col2:
-    st.markdown("<br>", unsafe_allow_html=True)  # small vertical alignment fix
+    st.markdown("<br>", unsafe_allow_html=True) 
     if st.button("Logout", key="logout_btn"):
         st.session_state.login = False
         st.session_state.role = None
         st.switch_page("login.py")
         
 customer_id = ''
-# -------------------- TABS --------------------
+
 tab1, tab2,tab3,tab4 = st.tabs(["👤 My Profile", "🆕 Create New Ticket","📋 My Tickets","🔒 Close Tickets"])
 
-# -------------------- TAB 1: VIEW / UPDATE PROFILE --------------------
 with tab1:
     profile = get_user_details(user_id)
 
@@ -102,7 +102,6 @@ with tab1:
                 update_user_details(user_id, phone, address)
                 st.success("✅ Profile updated successfully!")
 
-# -------------------- TAB 2: CREATE NEW TICKET --------------------
 with tab2:
     st.subheader("Create New Support Ticket")
     with st.form("ticket_form"):
@@ -126,14 +125,13 @@ with tab3:
     if not tickets:
         st.info("No tickets found. You haven’t raised any support queries yet.")
     else:
-        # Add some CSS styling for better UI
+        
         st.markdown("""
         <style>
         .stDataFrame { border: 2px solid #4A90E2; border-radius: 10px; }
         </style>
         """, unsafe_allow_html=True)
 
-        # Convert date to readable format
         for t in tickets:
             t["ticket_raised_on"] = t["ticket_raised_on"].strftime("%Y-%m-%d %H:%M:%S")
             if t["ticket_closed_on"] not in (None, '', 'null'):
@@ -152,7 +150,7 @@ with tab4:
     if not tickets:
         st.info("No tickets found. You haven’t raised any support queries yet.")
     else:
-        # CSS Styling for cards + status colors
+       
         st.markdown("""
         <style>
         .expander-header {
@@ -171,7 +169,7 @@ with tab4:
         """, unsafe_allow_html=True)
 
         for ticket in tickets:
-            # Pick color class based on ticket status
+            
             status = ticket["status"].lower()
             if status == "open":
                 color_class = "status-open"
@@ -180,7 +178,7 @@ with tab4:
             else:
                 color_class = "status-closed"
 
-            # Colored header rendered above expander
+         
             st.markdown(f"""
                 <div class="expander-header {color_class}">
                     🎫 {ticket['subject']} — [{ticket['status'].upper()}]
@@ -197,7 +195,7 @@ with tab4:
                 st.markdown(f"**Created At:** {created_at}")
                 st.markdown("---")
 
-                # Fetch details from DB
+                
                 conn = get_db_connection()
                 cursor = conn.cursor(dictionary=True)
                 cursor.execute("""
@@ -212,7 +210,7 @@ with tab4:
                 st.markdown(f"**Comments:** {details['comments'] or 'No comments yet'}")
                 st.markdown("---")
 
-                # Actions based on status
+               
                 if details["status"] == "Open":
                     if st.button(f"🛑 Close Ticket #{ticket['ticket_id']}"):
                         conn = get_db_connection()

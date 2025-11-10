@@ -5,7 +5,7 @@ def get_db_connection():
     try:
         conn = mysql.connector.connect(
             host="localhost",
-            user="root",          # your MySQL username
+            user="root",         
             password="Sedhu.k001@",
             database="cqms"
         )

@@ -5,7 +5,7 @@ from db import get_db_connection
 import streamlit as st
 
 
-# ✅ Fetch all open and closed tickets
+# Fetch all open and closed tickets
 def get_all_tickets():
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
@@ -55,7 +55,7 @@ def update_ticket_comment(ticket_id, comment):
     conn.close()
 
 
-# ✅ Analytics data
+#  Analytics data
 def get_ticket_analytics():
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
@@ -94,11 +94,11 @@ profile = get_user_name(user_id)
 user_name = profile["name"] if profile else "User"
 
 st.set_page_config(page_title="Support Dashboard", page_icon="🛠️")
-col1, col2 = st.columns([7, 2])  # Adjust ratio to control spacing
+col1, col2 = st.columns([7, 2]) 
 with col1:
     st.title("🛠️Welcome " + str(user_name))
 with col2:
-    st.markdown("<br>", unsafe_allow_html=True)  # small vertical alignment fix
+    st.markdown("<br>", unsafe_allow_html=True) 
     if st.button("Logout", key="logout_btn"):
         st.session_state.login = False
         st.session_state.role = None
@@ -107,7 +107,7 @@ with col2:
 
 tab1, tab2 = st.tabs(["📋 Ticket Management", "📊 Analytics"])
 
-# ✅ Inject CSS styling
+
 st.markdown("""
 <style>
 /* Table border styling */
@@ -139,13 +139,11 @@ st.markdown("""
 
 
 
-# ==============================
-# TAB 1 - Ticket Management
-# ==============================
+
 with tab1:
     st.subheader("📋 All Customer Tickets")
 
-    # Inject CSS for colored headers
+
     st.markdown("""
     <style>
     .expander-header {
@@ -169,7 +167,7 @@ with tab1:
         st.info("No tickets found in the system yet.")
     else:
         for ticket in tickets:
-            # Determine color based on ticket status
+           
             status = ticket["status"].lower()
             if status == "open":
                 color_class = "status-open"
@@ -178,7 +176,7 @@ with tab1:
             else:
                 color_class = "status-closed"
 
-            # Render colored header before expander
+            
             st.markdown(f"""
                 <div class="expander-header {color_class}">
                     🎫 Ticket #{ticket['ticket_id']} — {ticket['subject']} [{ticket['status'].upper()}]
@@ -198,7 +196,7 @@ with tab1:
                 if ticket["ticket_closed_on"] and ticket['status'] == 'Closed':
                     st.markdown(f"**Closed At:** {ticket['ticket_closed_on']}")
 
-                # Comment Update Section
+                
                 with st.form(f"comment_form_{ticket['ticket_id']}"):
                     new_comment = st.text_area("💬 Add / Update Comment", value=ticket['comments'] or "")
                     submit_comment = st.form_submit_button(
@@ -210,7 +208,7 @@ with tab1:
                         st.success("✅ Comment updated successfully!")
                         st.rerun()
 
-                # Action Buttons: Close / In Progress
+                
                 if ticket["status"].lower() in ["open", "in progress"]:
                     col3, col4 = st.columns([7, 2])
                     with col3:
@@ -227,7 +225,6 @@ with tab1:
                 else:
                     st.info("✅ This ticket is already closed.")
 
-                # Show Customer Review if Exists
                 if ticket["customer_review"]:
                     st.markdown("---")
                     st.markdown(f"**Customer Review:** {ticket['customer_review']}")
@@ -235,9 +232,6 @@ with tab1:
                         stars = int(ticket["review_stars"])
                         st.markdown(f"**Rating:** {'⭐' * stars}")
 
-# ==============================
-# TAB 2 - Analytics
-# ==============================
 with tab2:
     st.subheader("📊 Support Analytics Dashboard")
 
@@ -246,7 +240,6 @@ with tab2:
     if df_analytics.empty:
         st.info("No data available yet for analytics.")
     else:
-        # ---- SERVICE EFFICIENCY ----
         st.markdown("### ⚡ Service Efficiency (Average Resolution Time in Hours)")
         df_closed = df_analytics[df_analytics["status"].str.lower() == "closed"]
 
@@ -263,7 +256,7 @@ with tab2:
         else:
             st.info("No closed tickets yet to calculate resolution times.")
 
-        # ---- SUPPORT LOAD MONITORING ----
+       
         st.markdown("### 🧭 Support Load Monitoring (By Priority)")
         load_data = df_analytics.groupby("priority").size().reset_index(name="Count")
 
@@ -274,7 +267,7 @@ with tab2:
         plt.title("Ticket Load by Priority")
         st.pyplot(plt)
 
-        # ---- STATUS DISTRIBUTION ----
+       
         st.markdown("### 📈 Ticket Status Overview")
         status_counts = df_analytics["status"].value_counts().reset_index()
         status_counts.columns = ["Status", "Count"]
@@ -286,7 +279,7 @@ with tab2:
         plt.title("Open vs In Progress vs Closed Tickets")
         st.pyplot(plt)
 
-        # ---- PRIORITY VS STATUS ----
+   
         st.markdown("### 🎯 Ticket Distribution by Priority & Status")
         pivot_priority_status = (
             df_analytics.groupby(["priority", "status"])
@@ -305,7 +298,7 @@ with tab2:
         plt.xticks(rotation=0)
         st.pyplot(plt)
 
-        # ---- USER-WISE STATUS COUNT ----
+        
         st.markdown("### 👥 Tickets by User and Status")
         user_status = (
             df_analytics.groupby(["name", "status"])
@@ -326,7 +319,6 @@ with tab2:
         plt.xticks(rotation=45, ha="right")
         st.pyplot(plt)
 
-        # ---- MOST COMMON QUERY TYPES ----
         st.markdown("### 💬 Most Common Query Topics")
         top_subjects = df_analytics["subject"].value_counts().head(5)
         st.bar_chart(top_subjects)
